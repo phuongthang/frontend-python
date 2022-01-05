@@ -3,8 +3,8 @@ export default function Sidebar(props) {
      * render template
      */
     return (
-        <div id="sidebar" class="active">
-            <div class="sidebar-wrapper active">
+        <div id="sidebar" className="active">
+            <div className="sidebar-wrapper active">
                 
             </div>
         </div>

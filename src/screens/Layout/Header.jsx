@@ -3,9 +3,9 @@ export default function Header(props) {
      * render template
      */
     return (
-        <header class="mb-3">
-            <a href="#" class="burger-btn d-block d-xl-none">
-                <i class="bi bi-justify fs-3"></i>
+        <header className="mb-3">
+            <a href="#" className="burger-btn d-block d-xl-none">
+                <i className="bi bi-justify fs-3"></i>
             </a>
         </header>
     )

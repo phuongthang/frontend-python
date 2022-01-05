@@ -1,15 +1,28 @@
+import { useState } from 'react';
 import Lottie from 'react-lottie';
 import login from '../../assets/img/login.json';
+import { useNavigate } from "react-router";
 
 //packet
 import { useForm } from 'react-hook-form';
 import { FormFeedback } from "reactstrap";
+
+//Constant
 import validation from '../../constants/validation';
-import { useState } from 'react';
+import Common from './../../constants/common';
+import LinkName from './../../constants/linkName';
+
+//Component
 import ModalFail from './../Modal/ModalFail';
+
+//api
+import loginApi from './../../api/loginApi';
 
 export default function Login(props) {
 
+    /**
+     * define defalt option lottie
+     */
     const defaultOptions = {
         loop: true,
         autoplay: true,
@@ -19,10 +32,38 @@ export default function Login(props) {
         }
     };
 
+    let navigate = useNavigate();
+
     const { register, handleSubmit, getValues, reset, setValue, formState: { errors } } = useForm({
         mode: 'all',
         reValidateMode: 'all',
     });
+
+    /**
+     * on submit form
+     */
+    const _onSubmit = () => {
+        const data = {
+            email: getValues('email'),
+            password: getValues('password'),
+        }
+        loginApi.login(data).then(
+            (response) => {
+                if (response.status === Common.HTTP_STATUS.OK) {
+                    const token = response.data.token;
+                    localStorage.setItem('token',token);
+                    navigate(LinkName.HOME);
+
+                }
+                else {
+                    toggleModalFail();
+                }
+            },
+            (error) => {
+                toggleModalFail();
+            }
+        );
+    }
 
     /**
      * open/close modal
@@ -59,14 +100,14 @@ export default function Login(props) {
                             />
                         </div>
                         <h1 className="auth-title">Log in.</h1>
-                        <form>
+                        <form onSubmit={handleSubmit(_onSubmit)}>
                             <div className="form-group position-relative mb-4">
                                 <input
                                     type="text"
                                     className="form-control form-control-xl"
                                     placeholder="Username"
                                     {...register(
-                                        "username",
+                                        "email",
                                         {
                                             required: {
                                                 value: true,
@@ -84,8 +125,8 @@ export default function Login(props) {
                                     )}
                                     onBlur={(e) => _onBlur(e.currentTarget.name, e.currentTarget.value)}
                                 />
-                                {errors.username && (
-                                    <FormFeedback className="d-block">{errors.username.message}</FormFeedback>
+                                {errors.email && (
+                                    <FormFeedback className="d-block">{errors.email.message}</FormFeedback>
                                 )}
                             </div>
                             <div className="form-group position-relative mb-4">
@@ -104,10 +145,10 @@ export default function Login(props) {
                                                 value: 255,
                                                 message: "Không được vượt quá 255 kí tự !",
                                             },
-                                            pattern: {
-                                                value: new RegExp(validation.PASSWORD),
-                                                message: "Vui lòng nhập đúng định dạng !"
-                                            }
+                                            // pattern: {
+                                            //     value: new RegExp(validation.PASSWORD),
+                                            //     message: "Vui lòng nhập đúng định dạng !"
+                                            // }
                                         }
                                     )}
                                     onBlur={(e) => _onBlur(e.currentTarget.name, e.currentTarget.value)}
@@ -130,7 +171,7 @@ export default function Login(props) {
                                     Keep me logged in
                                 </label>
                             </div>
-                            <button type='button' onClick={toggleModalFail} className="btn btn-primary btn-block btn-lg shadow-lg mt-5">
+                            <button type='submit' className="btn btn-primary btn-block btn-lg shadow-lg mt-5">
                                 Log in
                             </button>
                         </form>
